@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greeting Card Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #container {
+            max-width: 600px;
+            margin: auto;
+        }
+        #greetingInput {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        #buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .generate {
+            background: linear-gradient(45deg, #00b09b, #96c93d); /* Gradient color */
+        }
+        .generate:hover {
+            background: linear-gradient(45deg, #96c93d, #00b09b); /* Hover effect with reversed gradient */
+            transform: translateY(-2px); /* Slight hover lift effect */
+        }
+        .clear {
+            background: linear-gradient(45deg, #f44336, #e57373); /* Gradient color */
+        }
+        .clear:hover {
+            background: linear-gradient(45deg, #e57373, #f44336); /* Hover effect with reversed gradient */
+            transform: translateY(-2px); /* Slight hover lift effect */
+        }
+        .share {
+            background: linear-gradient(45deg, #3f51b5, #5c6bc0); /* Gradient color */
+        }
+        .share:hover {
+            background: linear-gradient(45deg, #5c6bc0, #3f51b5); /* Hover effect with reversed gradient */
+            transform: translateY(-2px); /* Slight hover lift effect */
+        }
+        #cardContainer {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            margin: auto;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            display: none; /* Hidden initially */
+        }
+        .cardImage {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .greetingText {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 24px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <h2>Greeting Card Generator</h2>
+        <input type="text" id="greetingInput" placeholder="Enter your greeting">
+        <div id="buttons">
+            <button class="btn generate" onclick="generateCard()">Generate</button>
+            <button class="btn clear" onclick="clearCard()">Clear</button>
+            <button class="btn share" onclick="shareCard()">Share</button>
+        </div>
+
+        <div id="cardContainer">
+            <img src="" alt="Card Image" class="cardImage" id="cardImage">
+            <div class="greetingText" id="greetingText"></div>
+        </div>
+    </div>
+
+    <script>
+        const templates = [
+            "templates/template1.png",
+            "templates/template2.png",
+            "templates/template3.png",
+            "templates/template4.png",
+            "templates/template5.png",
+            "templates/template6.png",
+            "templates/template7.png",
+            "templates/template8.png",
+            "templates/template9.png",
+            "templates/template10.png"
+        ];
+
+        function generateCard() {
+            let greetingText = document.getElementById("greetingInput").value;
+            let cardContainer = document.getElementById("cardContainer");
+
+            if (!greetingText) {
+                alert("Please enter a greeting!");
+                return;
+            }
+
+            let randomTemplate = templates[Math.floor(Math.random() * templates.length)];
+
+            // Set the template image
+            document.getElementById("cardImage").src = randomTemplate;
+            document.getElementById("greetingText").innerText = greetingText;
+
+            cardContainer.style.display = "block"; // Show the card container
+
+            adjustTextColor(greetingText);
+        }
+
+        function clearCard() {
+            document.getElementById("greetingInput").value = "";
+            document.getElementById("cardContainer").style.display = "none"; // Hide the card container
+            document.getElementById("greetingText").innerText = "";
+            document.getElementById("cardImage").src = "";
+        }
+
+        function adjustTextColor(greetingText) {
+            let img = document.getElementById("cardImage");
+            let text = document.getElementById("greetingText");
+
+            if (!img || !text) return;
+
+            let canvas = document.createElement("canvas");
+            let ctx = canvas.getContext("2d");
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+
+            // Get pixel data from the center of the image to decide text color
+            let pixelData = ctx.getImageData(img.width / 2, img.height / 2, 1, 1).data;
+            let brightness = (pixelData[0] * 0.299 + pixelData[1] * 0.587 + pixelData[2] * 0.114);
+
+            // Adjust text color based on brightness of the image
+            text.style.color = brightness > 128 ? "black" : "white";
+
+            // Check for the specific phrase "Eid Mubarak" and adjust font size
+            if (greetingText.toLowerCase() === "eid mubarak") {
+                text.style.fontSize = "40px"; // Bigger font size for "Eid Mubarak"
+                text.style.fontFamily = "cursive"; // Italic font style for Eid Mubarak
+            } else {
+                let fontSize = brightness > 128 ? "24px" : "28px";
+                text.style.fontSize = fontSize;
+                text.style.fontFamily = "Arial, sans-serif"; // Default font style
+            }
+        }
+
+        function shareCard() {
+            let card = document.getElementById("cardContainer");
+
+            if (!card) {
+                alert("Please generate a card first!");
+                return;
+            }
+
+            html2canvas(card).then(canvas => {
+                let link = document.createElement("a");
+                link.href = canvas.toDataURL();
+                link.download = "greeting_card.png";
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
