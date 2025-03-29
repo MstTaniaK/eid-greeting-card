@@ -1,1 +1,1 @@
-# eid-greeting-card
+# Eid-greeting-card
